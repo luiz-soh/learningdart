@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "212486364974",
+    "project_id": "sohlearningdart",
+    "storage_bucket": "sohlearningdart.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:212486364974:android:0e07c30f3e452a15b724bf",
+        "android_client_info": {
+          "package_name": "com.example.learningdart"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "212486364974-idhscrshdv3u4nogjm3u26qg7spe4tq6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYaapOj9OeW_B7IMfjK_cyONKyxDxQbgc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "212486364974-idhscrshdv3u4nogjm3u26qg7spe4tq6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
