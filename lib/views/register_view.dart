@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'dart:developer' as devtools show log;
+//import 'dart:developer' as devtools show log;
+import 'package:learningdart/constants/routes.dart';
+import 'package:learningdart/utilities/show_error_dialog.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({Key? key}) : super(key: key);
@@ -57,24 +59,33 @@ class _RegisterViewState extends State<RegisterView> {
                   email: email,
                   password: password,
                 );
+                final user = FirebaseAuth.instance.currentUser;
+                await user?.sendEmailVerification();
+
+                if (!mounted) return;
+                Navigator.of(context).pushNamed(verifyEmailRoute);
               } on FirebaseAuthException catch (e) {
                 if (e.code == 'weak-password') {
-                  devtools.log('weak password');
+                  await showErrorDialog(context, 'senha muito fraca');
                 } else if (e.code == 'email-already-in-use') {
-                  devtools.log('e-mail already in use');
+                  await showErrorDialog(context, 'e-mail ja está em uso');
                 } else if (e.code == 'invalid-email') {
-                  devtools.log('invalid e-mail');
+                  await showErrorDialog(context, 'e-mail inválido');
                 } else {
-                  devtools.log(e.code);
+                  await showErrorDialog(context, e.code);
                 }
+              } catch (e) {
+                await showErrorDialog(context, e.toString());
               }
             },
             child: const Text("Cadastrar"),
           ),
           TextButton(
             onPressed: () {
-              Navigator.of(context)
-                  .pushNamedAndRemoveUntil('/login/', (route) => false);
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                loginRoute,
+                (route) => false,
+              );
             },
             child: const Text('Ja tenho uma conta'),
           )
