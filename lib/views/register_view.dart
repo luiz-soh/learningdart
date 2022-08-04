@@ -1,7 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 //import 'dart:developer' as devtools show log;
 import 'package:learningdart/constants/routes.dart';
+import 'package:learningdart/services/auth/auth_exceptions.dart';
+import 'package:learningdart/services/auth/auth_service.dart';
 import 'package:learningdart/utilities/show_error_dialog.dart';
 
 class RegisterView extends StatefulWidget {
@@ -55,27 +56,22 @@ class _RegisterViewState extends State<RegisterView> {
               try {
                 final email = _email.text;
                 final password = _password.text;
-                await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                await AuthService.firebase().createUser(
                   email: email,
                   password: password,
                 );
-                final user = FirebaseAuth.instance.currentUser;
-                await user?.sendEmailVerification();
+                await AuthService.firebase().sendEmailVerification();
 
                 if (!mounted) return;
                 Navigator.of(context).pushNamed(verifyEmailRoute);
-              } on FirebaseAuthException catch (e) {
-                if (e.code == 'weak-password') {
-                  await showErrorDialog(context, 'senha muito fraca');
-                } else if (e.code == 'email-already-in-use') {
-                  await showErrorDialog(context, 'e-mail ja está em uso');
-                } else if (e.code == 'invalid-email') {
-                  await showErrorDialog(context, 'e-mail inválido');
-                } else {
-                  await showErrorDialog(context, e.code);
-                }
-              } catch (e) {
-                await showErrorDialog(context, e.toString());
+              } on WeakPasswordAuthException catch (_) {
+                await showErrorDialog(context, 'senha muito fraca');
+              } on EmailAlreadyInUseAuthException catch (_) {
+                await showErrorDialog(context, 'e-mail ja está em uso');
+              } on InvalidEmailAuthException catch (_) {
+                await showErrorDialog(context, 'e-mail inválido');
+              } on GenericAuthException catch (_) {
+                await showErrorDialog(context, 'ocorreu um erro no cadastro');
               }
             },
             child: const Text("Cadastrar"),
