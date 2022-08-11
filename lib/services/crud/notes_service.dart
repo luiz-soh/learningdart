@@ -11,13 +11,16 @@ class NotesService {
   List<DatabaseNote> _notes = [];
 
 //transformando service em singleton
-static final NotesService _shared = NotesService._sharedInstance();
-NotesService._sharedInstance();
-factory NotesService() => _shared;
+  static final NotesService _shared = NotesService._sharedInstance();
+  NotesService._sharedInstance() {
+    _notesStreamConstroller =
+        StreamController<List<DatabaseNote>>.broadcast(onListen: () {
+      _notesStreamConstroller.sink.add(_notes);
+    });
+  }
+  factory NotesService() => _shared;
 
-  final _notesStreamConstroller =
-      StreamController<List<DatabaseNote>>.broadcast();
-  
+  late final StreamController<List<DatabaseNote>> _notesStreamConstroller;
   Stream<List<DatabaseNote>> get allNotes => _notesStreamConstroller.stream;
 
   Future<void> _cacheNotes() async {
@@ -104,7 +107,7 @@ factory NotesService() => _shared;
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final deletedCount = await db.delete(
-      userTable,
+      noteTable,
       where: 'id = ?',
       whereArgs: [id],
     );
@@ -164,7 +167,7 @@ factory NotesService() => _shared;
   }
 
   Future<DatabaseUser> createUser({required String email}) async {
-   await _ensureDbIsOpen();
+    await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final results = await db.query(
       userTable,
@@ -239,7 +242,7 @@ factory NotesService() => _shared;
   Future<void> _ensureDbIsOpen() async {
     try {
       await open();
-    } on DatabaseAlreadyOpenException{
+    } on DatabaseAlreadyOpenException {
       //empty
     }
   }
