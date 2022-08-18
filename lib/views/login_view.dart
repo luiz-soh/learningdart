@@ -5,6 +5,7 @@ import 'package:learningdart/constants/routes.dart';
 import 'package:learningdart/services/auth/auth_exceptions.dart';
 import 'package:learningdart/services/auth/bloc/auth_bloc.dart';
 import 'package:learningdart/services/auth/bloc/auth_event.dart';
+import 'package:learningdart/services/auth/bloc/auth_state.dart';
 import 'package:learningdart/utilities/dialogs/error_dialog.dart';
 
 class LoginView extends StatefulWidget {
@@ -53,28 +54,30 @@ class _LoginViewState extends State<LoginView> {
             autocorrect: false,
             decoration: const InputDecoration(hintText: 'Senha'),
           ),
-          TextButton(
-            onPressed: () async {
-              try {
+          BlocListener<AuthBloc, AuthState>(
+            listener: (context, state) async {
+              if (state is AuthStateLoggedOut) {
+                if (state.exception is UserNotFoundAuthException ||
+                state.exception is WrongPasswordAuthException) {
+                  await showErrorDialog(context, 'email e ou senha inválidos');
+                } else if (state is GenericAuthException) {
+                  await showErrorDialog(context, 'occorreu um erro');
+                }
+              }
+            },
+            child: TextButton(
+              onPressed: () async {
                 final email = _email.text;
                 final password = _password.text;
-
                 context.read<AuthBloc>().add(
                       AuthEventLogIn(
                         email,
                         password,
                       ),
                     );
-              } on UserNotFoundAuthException catch (_) {
-                await showErrorDialog(context, 'email e ou senha inválidos');
-              } on WrongPasswordAuthException catch (_) {
-                await showErrorDialog(context, 'email e ou senha inválidos');
-              } on GenericAuthException catch (_) {
-                await showErrorDialog(
-                    context, 'ocorreu um erro na autenticação');
-              }
-            },
-            child: const Text("Login"),
+              },
+              child: const Text("Login"),
+            ),
           ),
           TextButton(
             onPressed: () {
