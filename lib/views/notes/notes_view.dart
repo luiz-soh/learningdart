@@ -47,7 +47,7 @@ class _NotesViewState extends State<NotesView> {
                   if (shouldLogout) {
                     if (!mounted) return;
 
-                    context.read<AuthBloc>().add(const AuthEvenLogout());
+                    context.read<AuthBloc>().add(const AuthEventLogOut());
                   }
               }
             },
