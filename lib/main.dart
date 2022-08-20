@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learningdart/constants/routes.dart';
+import 'package:learningdart/helpers/loading/loading_screen.dart';
 import 'package:learningdart/services/auth/bloc/auth_bloc.dart';
 import 'package:learningdart/services/auth/bloc/auth_event.dart';
 import 'package:learningdart/services/auth/bloc/auth_state.dart';
@@ -34,22 +35,27 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     context.read<AuthBloc>().add(const AuthEventInitialize());
-    return BlocBuilder<AuthBloc, AuthState>(
-      builder: (context, state) {
-        if (state is AuthStateLoggedIn) {
-          return const NotesView();
-        } else if (state is AuthStateNeedsVerification) {
-          return const VerifyEmailView();
-        } else if (state is AuthStateLoggedOut) {
-          return const LoginView();
-        } else if (state is AuthStateRegistering) {
-          return const RegisterView();
-        } else {
-          return const Scaffold(
-            body: CircularProgressIndicator(),
-          );
-        }
-      },
-    );
+    return BlocConsumer<AuthBloc, AuthState>(listener: (context, state) {
+      if (state.isLoading) {
+        LoadingScreen().show(
+            context: context, text: state.loadinText ?? 'Aguarde, carregando');
+      } else {
+        LoadingScreen().hide();
+      }
+    }, builder: (context, state) {
+      if (state is AuthStateLoggedIn) {
+        return const NotesView();
+      } else if (state is AuthStateNeedsVerification) {
+        return const VerifyEmailView();
+      } else if (state is AuthStateLoggedOut) {
+        return const LoginView();
+      } else if (state is AuthStateRegistering) {
+        return const RegisterView();
+      } else {
+        return const Scaffold(
+          body: CircularProgressIndicator(),
+        );
+      }
+    });
   }
 }
