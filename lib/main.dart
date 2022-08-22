@@ -17,7 +17,8 @@ import 'package:learningdart/views/verify_email_view.dart';
 void main() {
   runApp(
     MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      title: 'Notas Flutter',
       theme: ThemeData(primarySwatch: Colors.blue),
       home: BlocProvider<AuthBloc>(
         create: (context) => AuthBloc(FirebaseAuthProvider()),
